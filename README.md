@@ -2,29 +2,41 @@
 
 **Reveal how any codebase works.**
 
+**Live demo:** [https://reporeveal-wine.vercel.app](https://reporeveal-wine.vercel.app)
+
 RepoReveal helps developers understand unfamiliar public Python GitHub repositories. Paste a repository URL and RepoReveal safely downloads the source, analyzes it without executing anything, builds a file-level dependency graph, detects entry points, ranks important files, and optionally answers grounded questions with validated citations.
 
 ## Screenshots
+
+The images below show **RepoReveal analyzing an example third-party repository** ([pallets/click](https://github.com/pallets/click)). They are product UI screenshots, not diagrams of RepoReveal’s own codebase. RepoReveal’s system design is documented later under [Architecture](#architecture).
 
 ### Landing page
 
 ![RepoReveal landing page](docs/screenshots/landing.png)
 
-### Overview
+### Example analysis — Overview
 
-![Analysis overview](docs/screenshots/Overview.png)
+Overview for `pallets/click`: stats, AI architecture summary, and suggested reading order.
 
-### Architecture
+![Example analysis overview for pallets/click](docs/screenshots/Overview.png)
 
-![Dependency graph architecture view](docs/screenshots/Architecture.png)
+### Example analysis — Architecture tab
 
-### Files
+Interactive **file-level dependency graph** of the analyzed example repo (not RepoReveal’s internals).
 
-![Searchable files table](docs/screenshots/Files.png)
+![Example dependency graph for pallets/click](docs/screenshots/Architecture.png)
 
-### Ask RepoReveal
+### Example analysis — Files tab
 
-![Grounded repository Q&A](docs/screenshots/ask.png)
+Searchable file table from the same example analysis.
+
+![Example files table for pallets/click](docs/screenshots/Files.png)
+
+### Example analysis — Ask RepoReveal
+
+Grounded Q&A over retrieved evidence from the example repository.
+
+![Example Ask RepoReveal session for pallets/click](docs/screenshots/ask.png)
 
 ## Features
 

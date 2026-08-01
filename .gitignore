@@ -21,6 +21,7 @@ node_modules/
 frontend/.next/
 frontend/out/
 frontend/coverage/
+frontend/.vercel/
 *.tsbuildinfo
 next-env.d.ts
 
