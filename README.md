@@ -6,7 +6,13 @@ RepoReveal helps developers understand unfamiliar public Python GitHub repositor
 
 ## Screenshots
 
-> Add screenshots of the landing page, analysis progress, Overview tab, Architecture graph, Files table, and Ask RepoReveal tab here after local runs.
+### Landing page
+
+![RepoReveal landing page](docs/screenshots/landing.png)
+
+### Analysis overview
+
+![RepoReveal analysis overview for a sample repository](docs/screenshots/analysis-overview.png)
 
 ## Features
 
