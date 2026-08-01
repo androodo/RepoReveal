@@ -2,7 +2,8 @@
 
 **Reveal how any codebase works.**
 
-**Live demo:** [https://reporeveal-wine.vercel.app](https://reporeveal-wine.vercel.app)
+**Live demo:** [https://reporeveal-wine.vercel.app](https://reporeveal-wine.vercel.app)  
+Frontend on Vercel · API + Postgres (pgvector) on Railway
 
 RepoReveal helps developers understand unfamiliar public Python GitHub repositories. Paste a repository URL and RepoReveal safely downloads the source, analyzes it without executing anything, builds a file-level dependency graph, detects entry points, ranks important files, and optionally answers grounded questions with validated citations.
 

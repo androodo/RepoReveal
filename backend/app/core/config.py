@@ -20,6 +20,15 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://reporeveal:reporeveal@localhost:5432/reporeveal"
 
+    @property
+    def async_database_url(self) -> str:
+        url = self.database_url
+        if url.startswith("postgres://"):
+            return "postgresql+asyncpg://" + url.removeprefix("postgres://")
+        if url.startswith("postgresql://"):
+            return "postgresql+asyncpg://" + url.removeprefix("postgresql://")
+        return url
+
     github_token: str | None = None
     github_api_base_url: str = "https://api.github.com"
     github_api_version: str = "2022-11-28"
