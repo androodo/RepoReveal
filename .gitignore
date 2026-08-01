@@ -1,0 +1,42 @@
+# Environment
+.env
+.env.local
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg
+
+# Node / Next.js
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temp / analysis
+tmp/
+/tmp/
+*.tar.gz
+*.zip
+
+# Coverage / logs
+coverage/
+htmlcov/
+*.log
