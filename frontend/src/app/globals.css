@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f7f5;
+  --foreground: #171717;
+  --surface: #ffffff;
+  --surface-2: #f0efec;
+  --border: #e4e2dc;
+  --muted: #6b7280;
+  --accent: #0f766e;
+  --accent-fg: #ffffff;
+  --accent-soft: #ccfbf1;
+  --danger: #b91c1c;
+  --warning: #b45309;
+}
+
+.dark {
+  --background: #0f1115;
+  --foreground: #e8eaed;
+  --surface: #171a21;
+  --surface-2: #1f2430;
+  --border: #2a3140;
+  --muted: #9aa3b2;
+  --accent: #2dd4bf;
+  --accent-fg: #042f2e;
+  --accent-soft: #134e4a;
+  --danger: #f87171;
+  --warning: #fbbf24;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 500px at 10% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
+    radial-gradient(900px 400px at 100% 0%, color-mix(in oklab, var(--accent) 8%, transparent), transparent),
+    var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+code,
+.font-mono {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
