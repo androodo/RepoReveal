@@ -11,7 +11,7 @@ function GitHubMark({ className }: { className?: string }) {
 
 export function SiteHeader() {
   const repoUrl =
-    process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/your-username/RepoReveal";
+    process.env.NEXT_PUBLIC_GITHUB_REPO_URL || "https://github.com/androodo/RepoReveal";
   return (
     <header className="border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">

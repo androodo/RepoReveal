@@ -196,7 +196,7 @@ async def _neighbor_file_ids(
 
 
 def validate_citations(
-    citations: list[dict[str, Any]],
+    citations: list[Any],
     *,
     allowed_chunks: list[RetrievedChunk],
     known_paths: set[str],
@@ -205,6 +205,26 @@ def validate_citations(
     allowed_paths = {c.file_path for c in allowed_chunks} | known_paths
     valid: list[dict[str, Any]] = []
     for cite in citations:
+        if isinstance(cite, str):
+            path = cite
+            if path not in allowed_paths:
+                continue
+            chunk = next((c for c in allowed_chunks if c.file_path == path), None)
+            if chunk is None:
+                continue
+            valid.append(
+                {
+                    "file_path": path,
+                    "line_start": chunk.line_start,
+                    "line_end": chunk.line_end,
+                    "reason": "Referenced in evidence",
+                }
+            )
+            continue
+
+        if not isinstance(cite, dict):
+            continue
+
         path = cite.get("file_path")
         start = cite.get("line_start")
         end = cite.get("line_end")
@@ -212,7 +232,6 @@ def validate_citations(
             continue
         if not isinstance(start, int) or not isinstance(end, int):
             continue
-        # Accept if overlaps any retrieved chunk for that file, or exact path known from context
         overlaps = any(
             c.file_path == path and not (end < c.line_start or start > c.line_end)
             for c in allowed_chunks

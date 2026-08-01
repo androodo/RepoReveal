@@ -7,6 +7,16 @@ import { Input } from "@/components/ui/input";
 import { ApiError, askRepository, getStarterQuestions } from "@/lib/api";
 import type { AskPayload } from "@/types/analysis";
 
+function asStringList(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map(String).map((item) => item.trim()).filter(Boolean);
+  }
+  if (typeof value === "string" && value.trim()) {
+    return [value.trim()];
+  }
+  return [];
+}
+
 export function AskTab({
   analysisId,
   aiAvailable,
@@ -92,28 +102,28 @@ export function AskTab({
             <div className="mt-4">
               <h4 className="text-sm font-medium">Citations</h4>
               <ul className="mt-2 space-y-1 font-mono text-xs text-[var(--muted)]">
-                {answer.citations.map((c) => (
-                  <li key={`${c.file_path}-${c.line_start}-${c.reason}`}>
+                {answer.citations.map((c, index) => (
+                  <li key={`${c.file_path}-${c.line_start}-${c.line_end}-${index}`}>
                     {c.file_path}:{c.line_start}-{c.line_end} — {c.reason}
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          {answer.suggested_files.length > 0 && (
+          {asStringList(answer.suggested_files).length > 0 && (
             <div className="mt-4">
               <h4 className="text-sm font-medium">Suggested files</h4>
               <ul className="mt-2 space-y-1 font-mono text-xs text-[var(--accent)]">
-                {answer.suggested_files.map((f) => (
-                  <li key={f}>{f}</li>
+                {asStringList(answer.suggested_files).map((f, index) => (
+                  <li key={`${f}-${index}`}>{f}</li>
                 ))}
               </ul>
             </div>
           )}
-          {answer.limitations.length > 0 && (
+          {asStringList(answer.limitations).length > 0 && (
             <ul className="mt-4 list-disc pl-5 text-xs text-[var(--muted)]">
-              {answer.limitations.map((l) => (
-                <li key={l}>{l}</li>
+              {asStringList(answer.limitations).map((l, index) => (
+                <li key={`${index}-${l.slice(0, 24)}`}>{l}</li>
               ))}
             </ul>
           )}

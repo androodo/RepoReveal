@@ -46,3 +46,24 @@ def test_validate_citations_discards_fabricated() -> None:
     )
     assert len(valid) == 1
     assert valid[0]["file_path"] == "app/auth.py"
+
+
+def test_validate_citations_accepts_string_paths() -> None:
+    chunk = RetrievedChunk(
+        chunk_id=uuid4(),
+        file_id=uuid4(),
+        file_path="app/main.py",
+        symbol_name="main",
+        line_start=1,
+        line_end=20,
+        content="def main():\n    pass\n",
+        score=1.0,
+    )
+    valid = validate_citations(
+        ["app/main.py", "missing.py", 123],
+        allowed_chunks=[chunk],
+        known_paths={"app/main.py"},
+    )
+    assert len(valid) == 1
+    assert valid[0]["file_path"] == "app/main.py"
+    assert valid[0]["line_start"] == 1

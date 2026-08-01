@@ -218,17 +218,20 @@ def _normalize_answer(
     chunks: list[RetrievedChunk],
     known_paths: set[str],
 ) -> dict[str, Any]:
+    raw_citations = raw.get("citations") or []
+    if not isinstance(raw_citations, list):
+        raw_citations = [raw_citations]
     citations = validate_citations(
-        list(raw.get("citations") or []),
+        raw_citations,
         allowed_chunks=chunks,
         known_paths=known_paths,
     )
     suggested = [
-        p for p in (raw.get("suggested_files") or []) if isinstance(p, str) and p in known_paths
+        p for p in _as_str_list(raw.get("suggested_files")) if p in known_paths
     ]
     answer = str(raw.get("answer") or "").strip()
     confidence = str(raw.get("confidence") or "low")
-    limitations = [str(x) for x in (raw.get("limitations") or [])]
+    limitations = _as_str_list(raw.get("limitations"))
     if not answer or (not citations and confidence == "high"):
         answer = "RepoReveal could not find enough repository evidence to answer confidently."
         confidence = "low"
@@ -240,6 +243,23 @@ def _normalize_answer(
         "confidence": confidence,
         "limitations": limitations,
     }
+
+
+def _as_str_list(value: Any) -> list[str]:
+    """Coerce model output into a list of non-empty strings.
+
+    LLMs sometimes return a bare string instead of a JSON array. Iterating a
+    string would otherwise split it into characters.
+    """
+    if value is None:
+        return []
+    if isinstance(value, str):
+        text = value.strip()
+        return [text] if text else []
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    text = str(value).strip()
+    return [text] if text else []
 
 
 def _structural_facts(analysis: Analysis) -> list[str]:
