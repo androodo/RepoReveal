@@ -140,14 +140,10 @@ async def explain_file(
         )
 
     dep_paths = [
-        related_files[e.target_file_id].path
-        for e in outgoing
-        if e.target_file_id in related_files
+        related_files[e.target_file_id].path for e in outgoing if e.target_file_id in related_files
     ]
     importer_paths = [
-        related_files[e.source_file_id].path
-        for e in incoming
-        if e.source_file_id in related_files
+        related_files[e.source_file_id].path for e in incoming if e.source_file_id in related_files
     ]
     facts = [
         f"File path: {file_row.path}",
