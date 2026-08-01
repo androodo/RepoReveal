@@ -1,0 +1,15 @@
+[project]
+name = "demo-service"
+version = "0.1.0"
+description = "Small FastAPI-style demo used by RepoReveal tests"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+]
+
+[project.scripts]
+demo-service = "demo_service.main:run"
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
