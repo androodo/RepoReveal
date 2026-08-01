@@ -20,7 +20,7 @@ export function RepositoryForm() {
   const router = useRouter();
   const [submitError, setSubmitError] = useState<string | null>(null);
   const demoUrl =
-    process.env.NEXT_PUBLIC_DEMO_REPOSITORY_URL || "https://github.com/tiangolo/fastapi";
+    process.env.NEXT_PUBLIC_DEMO_REPOSITORY_URL || "https://github.com/pallets/click";
 
   const {
     register,
