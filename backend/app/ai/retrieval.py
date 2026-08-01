@@ -225,13 +225,14 @@ def validate_citations(
         if not isinstance(cite, dict):
             continue
 
-        path = cite.get("file_path")
+        raw_path = cite.get("file_path")
         start = cite.get("line_start")
         end = cite.get("line_end")
-        if not isinstance(path, str) or path not in allowed_paths:
+        if not isinstance(raw_path, str) or raw_path not in allowed_paths:
             continue
         if not isinstance(start, int) or not isinstance(end, int):
             continue
+        path = raw_path
         overlaps = any(
             c.file_path == path and not (end < c.line_start or start > c.line_end)
             for c in allowed_chunks
