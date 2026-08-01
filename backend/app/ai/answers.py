@@ -226,9 +226,7 @@ def _normalize_answer(
         allowed_chunks=chunks,
         known_paths=known_paths,
     )
-    suggested = [
-        p for p in _as_str_list(raw.get("suggested_files")) if p in known_paths
-    ]
+    suggested = [p for p in _as_str_list(raw.get("suggested_files")) if p in known_paths]
     answer = str(raw.get("answer") or "").strip()
     confidence = str(raw.get("confidence") or "low")
     limitations = _as_str_list(raw.get("limitations"))
