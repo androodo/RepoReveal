@@ -37,16 +37,37 @@
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
 }
 
 body {
-  background:
-    radial-gradient(1200px 500px at 10% -10%, color-mix(in oklab, var(--accent) 12%, transparent), transparent),
-    radial-gradient(900px 400px at 100% 0%, color-mix(in oklab, var(--accent) 8%, transparent), transparent),
-    var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Glow is clipped to the hero only; always sits on an opaque base. */
+.hero-atmosphere {
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--background);
+  background-image: radial-gradient(
+    ellipse 70% 55% at 40% -10%,
+    color-mix(in oklab, var(--accent) 16%, transparent),
+    transparent 70%
+  );
+}
+
+.landing-features {
+  position: relative;
+  z-index: 1;
+  background-color: var(--background);
+}
+
+@media (max-height: 700px) {
+  .hero-atmosphere {
+    background-image: none;
+  }
 }
 
 code,

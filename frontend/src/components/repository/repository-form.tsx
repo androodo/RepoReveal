@@ -50,9 +50,10 @@ export function RepositoryForm() {
         <Input
           aria-label="GitHub repository URL"
           placeholder="https://github.com/owner/repository"
+          className="px-3.5 py-2.5 text-base"
           {...register("repositoryUrl")}
         />
-        <Button type="submit" disabled={isSubmitting} className="shrink-0">
+        <Button type="submit" disabled={isSubmitting} className="h-auto shrink-0 px-5 py-2.5 text-base">
           {isSubmitting ? "Starting…" : "Analyze Repository"}
         </Button>
       </div>
