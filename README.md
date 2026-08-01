@@ -10,9 +10,21 @@ RepoReveal helps developers understand unfamiliar public Python GitHub repositor
 
 ![RepoReveal landing page](docs/screenshots/landing.png)
 
-### Analysis overview
+### Overview
 
-![RepoReveal analysis overview for a sample repository](docs/screenshots/analysis-overview.png)
+![Analysis overview](docs/screenshots/Overview.png)
+
+### Architecture
+
+![Dependency graph architecture view](docs/screenshots/Architecture.png)
+
+### Files
+
+![Searchable files table](docs/screenshots/Files.png)
+
+### Ask RepoReveal
+
+![Grounded repository Q&A](docs/screenshots/ask.png)
 
 ## Features
 
