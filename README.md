@@ -216,6 +216,3 @@ Core tests mock external APIs and do not require GitHub or OpenAI credentials.
 
 `examples/demo_repository/` is a small FastAPI-style Python package used for deterministic analyzer tests.
 
-## License
-
-MIT (or your preferred license).
