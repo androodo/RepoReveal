@@ -4,6 +4,7 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   backend:
@@ -27,9 +28,78 @@ jobs:
       - name: Mypy
         run: mypy app
       - name: Pytest
-        run: pytest -q
+        id: pytest
+        run: |
+          set -o pipefail
+          pytest -v --tb=short --color=no 2>&1 | tee pytest-output.log
       - name: Alembic config check
         run: alembic history
+      - name: Send backend results to TriageAI
+        if: always() && hashFiles('backend/pytest-output.log') != ''
+        env:
+          TRIAGEAI_URL: ${{ secrets.TRIAGEAI_API_URL }}
+          REPO_NAME: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          PIPELINE_ID: ${{ github.run_id }}-backend
+        run: |
+          if [ -z "$TRIAGEAI_URL" ]; then
+            echo "TRIAGEAI_API_URL secret not set — skipping ingest."
+            exit 0
+          fi
+
+          TRIAGEAI_URL="${TRIAGEAI_URL%/}"
+          FAILED_COUNT=$(grep -c "FAILED" pytest-output.log || true)
+          STATUS="passed"
+          if [ "${FAILED_COUNT:-0}" -gt 0 ]; then
+            STATUS="failed"
+          elif grep -Eq "ERROR|errors=" pytest-output.log; then
+            # Collection/import errors still count as a failed CI run for triage
+            if grep -qE "[= ]+[1-9][0-9]* (failed|error)" pytest-output.log; then
+              STATUS="failed"
+            fi
+          fi
+          # If the Pytest step failed but log has no FAILED lines, still mark failed
+          if [ "${{ job.status }}" = "failure" ] && [ "$STATUS" = "passed" ]; then
+            STATUS="failed"
+          fi
+
+          FAILED_TESTS=$(grep "FAILED" pytest-output.log | awk '{print $2}' | paste -sd "," - || true)
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          LOG_TEXT=$(cat pytest-output.log)
+
+          PAYLOAD=$(jq -n \
+            --arg repo_name "$REPO_NAME" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg pipeline_id "$PIPELINE_ID" \
+            --arg environment "github-actions" \
+            --arg status "$STATUS" \
+            --arg test_suite_name "backend-pytest" \
+            --arg failed_test_names "${FAILED_TESTS:-}" \
+            --arg raw_log_text "$LOG_TEXT" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              repo_name: $repo_name,
+              branch: $branch,
+              commit_sha: $commit_sha,
+              pipeline_id: $pipeline_id,
+              environment: $environment,
+              status: $status,
+              test_suite_name: $test_suite_name,
+              failed_test_names: (if $failed_test_names == "" then [] else ($failed_test_names | split(",")) end),
+              timestamp: $timestamp,
+              raw_log_text: $raw_log_text
+            }')
+
+          echo "Posting to ${TRIAGEAI_URL}/api/runs/ingest (status=$STATUS)"
+          HTTP_CODE=$(curl -sS -o /tmp/triageai-response.json -w "%{http_code}" \
+            -X POST "${TRIAGEAI_URL}/api/runs/ingest" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD") || true
+          echo "HTTP status: $HTTP_CODE"
+          cat /tmp/triageai-response.json || true
+          echo
 
   frontend:
     runs-on: ubuntu-latest
@@ -50,7 +120,68 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
       - name: Unit tests
-        run: npm test
+        id: unit_tests
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee vitest-output.log
+      - name: Send frontend results to TriageAI
+        if: always() && hashFiles('frontend/vitest-output.log') != ''
+        env:
+          TRIAGEAI_URL: ${{ secrets.TRIAGEAI_API_URL }}
+          REPO_NAME: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          COMMIT_SHA: ${{ github.sha }}
+          PIPELINE_ID: ${{ github.run_id }}-frontend
+        run: |
+          if [ -z "$TRIAGEAI_URL" ]; then
+            echo "TRIAGEAI_API_URL secret not set — skipping ingest."
+            exit 0
+          fi
+
+          TRIAGEAI_URL="${TRIAGEAI_URL%/}"
+          STATUS="passed"
+          if grep -Eqi "FAIL|failed|Test Files.*(failed)|✕" vitest-output.log; then
+            STATUS="failed"
+          fi
+          if [ "${{ job.status }}" = "failure" ]; then
+            STATUS="failed"
+          fi
+
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          LOG_TEXT=$(cat vitest-output.log)
+
+          PAYLOAD=$(jq -n \
+            --arg repo_name "$REPO_NAME" \
+            --arg branch "$BRANCH" \
+            --arg commit_sha "$COMMIT_SHA" \
+            --arg pipeline_id "$PIPELINE_ID" \
+            --arg environment "github-actions" \
+            --arg status "$STATUS" \
+            --arg test_suite_name "frontend-vitest" \
+            --arg raw_log_text "$LOG_TEXT" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              repo_name: $repo_name,
+              branch: $branch,
+              commit_sha: $commit_sha,
+              pipeline_id: $pipeline_id,
+              environment: $environment,
+              status: $status,
+              test_suite_name: $test_suite_name,
+              failed_test_names: [],
+              timestamp: $timestamp,
+              raw_log_text: $raw_log_text
+            }')
+
+          echo "Posting to ${TRIAGEAI_URL}/api/runs/ingest (status=$STATUS)"
+          HTTP_CODE=$(curl -sS -o /tmp/triageai-response.json -w "%{http_code}" \
+            -X POST "${TRIAGEAI_URL}/api/runs/ingest" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD") || true
+          echo "HTTP status: $HTTP_CODE"
+          cat /tmp/triageai-response.json || true
+          echo
+
       - name: Build
         run: npm run build
         env:
